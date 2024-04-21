@@ -1,0 +1,3 @@
+messages-start = Hello, { $name }!
+
+messages-something_went_wrong = Ouch! something went wrong...

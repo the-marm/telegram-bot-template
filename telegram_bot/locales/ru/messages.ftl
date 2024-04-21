@@ -1,0 +1,3 @@
+messages-start = Привет, { $name }!
+
+messages-something_went_wrong = Упс! Щось пішло не так...
