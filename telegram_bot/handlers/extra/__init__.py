@@ -1,6 +1,10 @@
 from aiogram import Router
 
-from telegram_bot.handlers.extra import errors
+from . import errors
+
+routers_list: list[Router] = [
+    errors.router,
+]
 
 router = Router(name=__name__)
-router.include_router(errors.router)
+router.include_routers(*routers_list)

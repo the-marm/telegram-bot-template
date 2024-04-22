@@ -7,10 +7,12 @@ from redis.asyncio import ConnectionPool, Redis
 from telegram_bot.config import Config
 from telegram_bot.enums import Locale
 from telegram_bot.handlers import admin, common, extra
-from telegram_bot.middlewares.outer.database import DBSessionMiddleware
-from telegram_bot.middlewares.outer.i18n import UserManager
-from telegram_bot.middlewares.outer.user import UserMiddleware
-from telegram_bot.services.database.create_pool import create_pool
+from telegram_bot.middlewares.outer import (
+    DBSessionMiddleware,
+    UserManager,
+    UserMiddleware,
+)
+from telegram_bot.services.database import create_pool
 
 
 def _setup_outer_middlewares(dispatcher: Dispatcher, config: Config) -> None:
