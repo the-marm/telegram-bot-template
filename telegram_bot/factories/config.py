@@ -9,8 +9,8 @@ from telegram_bot.config import (
 
 def create_config() -> Config:
     return Config(
-        common=CommonConfig(),
-        postgres=PostgresConfig(),
-        redis=RedisConfig(),
-        webhook=WebhookConfig(),
+        common=CommonConfig(),  # pyright: ignore[reportCallIssue]
+        postgres=PostgresConfig(),  # pyright: ignore[reportCallIssue]
+        redis=RedisConfig(),  # pyright: ignore[reportCallIssue]
+        webhook=WebhookConfig(),  # pyright: ignore[reportCallIssue]
     )

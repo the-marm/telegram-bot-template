@@ -3,12 +3,12 @@ from typing import TYPE_CHECKING, Any, cast
 
 from aiogram import BaseMiddleware
 from aiogram.types import Chat, TelegramObject, User
+from aiogram_i18n import I18nMiddleware
 
-from telegram_bot.services.database.models import BotUser
+from telegram_bot.services.database.models import DBUser
 from telegram_bot.utils.loggers import database as logger
 
 if TYPE_CHECKING:
-    from aiogram_i18n import I18nMiddleware
 
     from telegram_bot.services.database import UoW
     from telegram_bot.services.database.repositories import Repository
@@ -28,21 +28,24 @@ class UserMiddleware(BaseMiddleware):
             return await handler(event, data)
 
         repository: Repository = data["repository"]
-        user: BotUser | None = await repository.users.get(
+        user: DBUser | None = await repository.users.get(
             telegram_user_id=aiogram_user.id,
         )
 
-        if user is None:
+        if user:
             i18n: I18nMiddleware = data["i18n_middleware"]
             uow: UoW = data["uow"]
-            user = BotUser.from_aiogram(
+            user = self._update_user_profile(
+                user=user, aiogram_user=aiogram_user, i18n=i18n,
+            )
+            await uow.commit(user)
+
+        if not user:
+            i18n: I18nMiddleware = data["i18n_middleware"]
+            uow: UoW = data["uow"]
+            user = DBUser.from_aiogram(
                 aiogram_user=aiogram_user,
-                locale=(
-                    aiogram_user.language_code
-                    if aiogram_user.language_code
-                    in i18n.core.available_locales
-                    else cast(str, i18n.core.default_locale)
-                ),
+                locale=self._get_user_locale(aiogram_user=aiogram_user, i18n=i18n),
             )
             await uow.commit(user)
 
@@ -52,6 +55,26 @@ class UserMiddleware(BaseMiddleware):
                 aiogram_user.id,
             )
 
+
         data["user"] = user
 
         return await handler(event, data)
+
+    def _update_user_profile(
+        self, user: DBUser, aiogram_user: User, i18n: I18nMiddleware,
+    ) -> DBUser:
+        if user.first_name != aiogram_user.first_name:
+            user.first_name = aiogram_user.first_name
+        elif user.last_name != aiogram_user.last_name:
+            user.last_name = aiogram_user.last_name
+        elif user.locale != aiogram_user.language_code:
+            user.locale = self._get_user_locale(aiogram_user=aiogram_user, i18n=i18n)
+        return user
+
+    def _get_user_locale(self, aiogram_user: User, i18n: I18nMiddleware) -> str:
+        return (aiogram_user.language_code
+                if aiogram_user.language_code
+                in i18n.core.available_locales
+                else cast(str, i18n.core.default_locale)
+                )
+

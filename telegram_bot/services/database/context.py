@@ -1,6 +1,5 @@
 import asyncio
 from types import TracebackType
-from typing import Self
 
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
@@ -13,19 +12,19 @@ class SQLSessionContext:
     _session: AsyncSession | None
 
     def __init__(
-        self: Self, session_pool: async_sessionmaker[AsyncSession],
+        self, session_pool: async_sessionmaker[AsyncSession],
     ) -> None:
         self._session_pool = session_pool
         self._session = None
 
-    async def __aenter__(self: Self) -> tuple[Repository, UoW]:
+    async def __aenter__(self) -> tuple[Repository, UoW]:
         self._session: AsyncSession | None = (
             await self._session_pool().__aenter__()
         )
         return Repository(session=self._session), UoW(session=self._session)
 
     async def __aexit__(
-        self: Self,
+        self,
         exc_type: type[BaseException] | None,
         exc_value: BaseException | None,
         traceback: TracebackType | None,

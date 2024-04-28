@@ -18,7 +18,7 @@ target_metadata: MetaData = Base.metadata
 
 
 def _get_postgres_dsn() -> URL:
-    _config: PostgresConfig = PostgresConfig()
+    _config: PostgresConfig = PostgresConfig()  # pyright: ignore[reportCallIssue]
     return _config.build_dsn()
 
 

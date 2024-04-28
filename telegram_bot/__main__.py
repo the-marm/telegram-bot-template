@@ -1,3 +1,20 @@
+"""Telegram Bot Application Module.
+
+This module provides the main entry point and functionality for a
+Telegram bot application.
+
+**Examples usage:**
+
+```python
+from telegram_bot import main
+
+main()
+```
+
+```bash
+poetry run python -m telegram_bot
+```
+"""
 from typing import TYPE_CHECKING
 
 from telegram_bot.factories.config import create_config
@@ -14,6 +31,7 @@ from telegram_bot.utils.loggers import setup_logger
 
 
 def main() -> None:
+    """Entry point for the Telegram bot application."""
     setup_logger()
 
     config: Config = create_config()

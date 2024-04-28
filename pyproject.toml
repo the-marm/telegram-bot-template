@@ -37,8 +37,8 @@ ignore = [
   "ANN102", 
   "ANN401",
   "BLE001",
-  "D",
   "EXE002",
+  "D", # TODO: Fix it
 ]
 
 fixable = ["ALL"]
